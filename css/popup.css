@@ -1,0 +1,123 @@
+@CHARSET "UTF-8";
+
+header {
+	height: 44px;
+	vertical-align: middle;
+	padding: 0 5px 0 10px;
+	background-color: #f6f7f9;
+	border-bottom: 1px solid #e8991f;
+	position: relative;
+}
+
+body {
+	background-color: #fff;
+	font: 12px Simsun;
+	margin: 0;
+	padding: 0;
+	width: 390px;
+}
+
+footer {
+	border-top: 1px solid #dfdfdf;
+	height: 33px;
+	background-size: 100% 100%;
+	-moz-background-size: 100% 100%;
+	opacity: 0.8;
+}
+
+.logo {
+	background-image: url(../image/logo.png);
+	background-size: 100% 100%;
+	-moz-background-size: 100% 100%;
+	background-repeat: no-repeat;
+	float: left;
+	width: 135px;
+	height: 28px;
+	margin-top: 8px;
+}
+
+header .project_tip {
+	position: absolute;
+	left: 258px;
+	bottom: 4px;
+	font-size: 12px;
+	color: #999;
+	height: 16px;
+	padding: 8px 0px 2px 0px;
+	cursor: pointer;
+	width: 100px;
+}
+
+header .project_name {
+	color: #fd8712;
+	font-weight: bolder;
+	position: absolute;
+	bottom: 2px;
+	padding-bottom: 2px;
+	border: none;
+	background-color: #f6f7f9;
+	cursor: pointer;
+}
+
+header .warning {
+	display: inline-block;
+	height: 11px;
+	width: 12px;
+	background-image: url(../image/warning_gray.png);
+	background-size: 100% 100%;
+	position: absolute;
+	right: 136px;
+	bottom: 10px;
+}
+
+#main {
+	border-top: 1px solid #e8991f;
+	height: 400px;
+	padding: 8px 6px;
+}
+
+.menu {
+	border-bottom: 1px solid #ccc;
+}
+
+#main .menu ul li {
+	display: inline-block;
+	vertical-align: middle;
+	color: #6f7b91;
+	font-size: 14px;
+	border-radius: 18px;
+	text-align: center;
+	cursor: pointer;
+	font-family: '微软雅黑';
+	padding: 0 10px;
+}
+
+#main .menu ul li:nth-of-type(1) {
+	background-color: #ccc;
+}
+
+#main .menu ul li a {
+	display: block;
+	color: #444d59;
+}
+
+#project_list {
+	background-color: #fff;
+	display: none;
+	cursor: pointer;
+	position: absolute;
+	width: 38px;
+	top: 40px;
+	left: 349px;
+	border: 1px solid;
+	display: none;
+}
+
+#select_icon_cover {
+	height: 10px;
+	width: 10px;
+	position: absolute;
+	right: 14px;
+	background-color: #f6f7f9;
+	bottom: 12px;
+}

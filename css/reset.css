@@ -1,0 +1,15 @@
+@CHARSET "UTF-8";
+
+/* 默认样式重置（css reset）*/
+body,html{height:100%;}
+body,p,h1,h2,h3,h4,h5,h6,dl,dd,ul{margin:0;font-size:12px;font-family:"宋体";}
+th,td{padding: 0;}
+li{list-style: none;}
+ol,ul{list-style:none;padding:0;margin:0;}
+a{text-decoration:none;}
+img{border:none;vertical-align: top;}
+form,select{margin:0;}
+input{margin:0;padding:0;}
+textarea{margin:0;padding:0;resizze:none;overflow:auto;}
+*{zoom:1;}
+/*textarea{outline:none;}*/
