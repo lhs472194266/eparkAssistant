@@ -1,24 +1,28 @@
 {
-	"name": "epark助手",
-	"version": "1.0.0",
+	"name": "epark插件",
+	"version": "1.0.0.1",
 	"manifest_version": 2,
 	"description": "linghaisen，493101885@qq.com",
 	"options_page": "html/options.html",
 	"permissions": [
+		"management",
+		"storage",
 		"tabs",
+		"unlimitedStorage",
 		"notifications",
 		"http://*/*",
 		"https://*/*"
 	],
 	"background": {
 		"scripts": [
+			"js/account.js",
 			"js/jquery-1.11.1.js",
 			"js/background.js"
 		]
 	},
 	"browser_action": {
 		"default_icon" : "image/demon-19.png",
-		"default_title": "epark助手\u2122",
+		"default_title": "epark插件\u2122",
 		"default_popup": "html/popup.html"
 	},
 	"content_scripts": [
@@ -33,7 +37,8 @@
 				"http://localhost:8080/*/*",
 				"http://jtss.rzbus.cn:980/*/*",
 				"http://www.cszhtc.com/*/*",
-				"http://192.168.69.61/*/*"
+				"http://www.topeasypark.com/*/*",
+				"http://localhost:8080/*/*/*"
 			],
 			"js": [
 				"js/account.js",

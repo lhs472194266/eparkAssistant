@@ -1,44 +1,20 @@
 var popup = popup || {
-	globalData:content,
-	bgPageWindow:chrome.extension.getBackgroundPage(),
-	dataFromBgPage:null
+	account : account,
+	background : chrome.extension.getBackgroundPage(),
+	dataFromBgPage : null,
+	currentProject : "noProject"
 };
 
 $(function() {
 	popup.getDataFrombgPage();
-	popup.ininElement();
 	popup.bindEvent();
+	popup.bindListener();
 });
 
-/**
- * 		    <option value="noProject">未打开</option>
-		    <option value="teyiting">特易停</option>
-		    <option value="taizhou">泰州</option>
-		    <option value="changshu">常熟</option>    
-		    <option value="rizhao">日照</option>    
-		    <option value="zhengzhou">郑州</option>    
-		    <option value="test">测试</option>    
-		    <option value="local">本地</option>   
- */
-popup.ininElement = function(){
-	var content = "",$projectNameDom = $("#project_name"),
-		projectNameArr = popup.globalData.projectName.projectNameArr,
-		projectNameZhArr = popup.globalData.projectName.projectNameZhArr;
-	
-	for (var i = 0; i < projectNameArr.length; i++) {
-		if(popup.dataFromBgPage.currentTabProjectName == projectNameArr[i]){
-			content += "<option value=" + projectNameArr[i] + " selected='selected' >" + projectNameZhArr[i] + "</option>"
-		}else{
-			content += "<option value=" + projectNameArr[i] + ">" + projectNameZhArr[i] + "</option>"
-		}
-	}
-	$projectNameDom.append(content);
-}
-
 popup.bindEvent = function() {
-	
 	$(".project_name").hover(function(){
 		$(".project_name").blur();
+		popup.switchProject(popup.currentProject);
 	});
 	
 	$("#project_list li").click(function(){
@@ -53,11 +29,58 @@ popup.bindEvent = function() {
 	});
 }
 
+popup.bindListener = function() {
+	chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
+		switch (request.action) {
+			case "":
+				break;
+		}
+	});
+}
+
 /**
- * 后台对象永不变，主动去询问现在是什么项目
+ * 查询当前Tab页打开的是什么项目，并初始化 <select> 元素.
  */
 popup.getDataFrombgPage = function(){
-	popup.dataFromBgPage = popup.bgPageWindow.bgPage.sendAllDataToViewPage();
-	console.log("主动去询问现在是什么项目:");
-	console.log(popup.dataFromBgPage);
+	var currentProjectName = "noProject";  
+	chrome.tabs.getSelected(null, function(tab) {
+		for ( var key in popup.account.absolutePath) {
+			var reg = new RegExp("^" + popup.account.absolutePath[key], "i");
+			if(reg.test(tab.url)){
+				currentProjectName = key;
+			}
+		}
+		popup.ininElement(currentProjectName);
+	});
+	return currentProjectName;
+}
+
+popup.ininElement = function(currentProjectName){
+	var innerHtml = "",$projectNameDom = $("#project_name"),
+		projectNameArr = popup.account.projectName.projectNameArr,
+		projectNameZhArr = popup.account.projectName.projectNameZhArr;
+	
+	for (var i = 0; i < projectNameArr.length; i++) {
+		if(currentProjectName == projectNameArr[i]){
+			innerHtml += "<option value=" + projectNameArr[i] + " selected='selected' >" + projectNameZhArr[i] + "</option>"
+			popup.currentProject = projectNameArr[i];
+		}else{
+			innerHtml += "<option value=" + projectNameArr[i] + ">" + projectNameZhArr[i] + "</option>"
+		}
+	}
+	$projectNameDom.append(innerHtml);
+}
+
+popup.switchProject = function(currentProject){
+	if($("#project_name").val() != currentProject){
+		popup.currentProject = $("#project_name").val();
+		chrome.extension.sendRequest({
+			action  : "switchProject_popup",
+			projectName: popup.currentProject
+		}, function(response) {
+			  if(response.success){
+				  console.log(response.message);
+			  }
+		});
+	}
 }
