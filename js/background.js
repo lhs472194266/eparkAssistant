@@ -3,9 +3,14 @@ var bgPage = bgPage || {
 };
 
 $(function() {
+	bgPage.init();
 	bgPage.bindListener();
 	bgPage.consoleNormall();
 });
+
+bgPage.init = function(){
+	
+}
 
 bgPage.bindListener = function() {
 	chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
