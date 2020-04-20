@@ -1,37 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Insert title here</title>
-<link rel="stylesheet" type="text/css" href="../css/reset.css" />
-<link rel="stylesheet" type="text/css" href="../css/popup.css" />
-<script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
-<script type="text/javascript" src="../js/account.js"></script>
-<script type="text/javascript" src="../js/popup.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>天王盖地虎 野鸡炖蘑菇</title>
+
+    <link rel="stylesheet" type="text/css" href="../css/AdminLTE.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../plugins/adminLTE/skins/_all-skins.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../plugins/zui-1.9.1/css/zui.min.css"/>
+    <script type="text/javascript" src="../js/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="../plugins/zui-1.9.1/js/zui.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="../css/haisen.css"/>
+
+    <script type="text/javascript" src="../js/popup.js"></script>
 </head>
-<body>
-	<header>
-		<a href="http://www.bitcomtech.com/productinfo.aspx?id=83&pid=86&pid1=86&pid2=80" target="_blank">
-			<h2 class="logo"></h2>
-		</a>
-		<span class="warning"></span> 
-		<span class="project_tip">当前项目：
-		  <select id="project_name" class="project_name"></select>
-		</span>
-		<div id="select_icon_cover"></div>
-	</header>
-	<div id="main">
-		<div class="menu" style="width: 378px;height: 22px;">
-			<ul>
-				<li><a href="javascript:void(0)">项目</a></li>
-				<li><a href="javascript:void(0)">工程</a></li>
-				<li><a href="javascript:void(0)">待定</a></li>
-				<li><a href="javascript:void(0)">待定</a></li>
-				<li><a href="javascript:void(0)">待定</a></li>
-				<li><a href="javascript:void(0)">待定</a></li>
-			</ul>
-		</div>
-	</div>
-	<footer></footer>
+<body class="hold-transition skin-blue sidebar-mini">
+<header class="main-header">
+    <a href="#" class="logo">
+        <span class="logo-mini"><b>H</b></span>
+        <span class="logo-lg"><b>Haisen</b>Tools</span>
+    </a>
+    <button id="options" aria-label="选项"></button>
+</header>
+<div class="main">
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-tab href="#tabContent1">Tickets</a></li>
+        <li><a data-tab href="#tabContent2">标签2</a></li>
+        <li><a data-tab href="#tabContent3">标签3</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active" id="tabContent1">
+            <div class="tab-wrapper">
+                <button id="query_last_reply_btn" class="btn btn-primary" type="button">
+                    抓取当前ticket查询列表最后一次回复
+                </button>
+            </div>
+        </div>
+        <div class="tab-pane" id="tabContent2">
+            <div class="tab-wrapper"></div>
+        </div>
+        <div class="tab-pane" id="tabContent3">
+            <div class="tab-wrapper"></div>
+        </div>
+    </div>
+</div>
+<footer class="main-footer">
+    <strong>Copyright © 2020 <a href="#">Linghaisen</a>.</strong> All rights reserved.
+    <!--<small class="version">1.0.0.1</small>-->
+</footer>
 </body>
 </html>
