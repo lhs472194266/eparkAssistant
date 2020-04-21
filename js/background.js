@@ -60,10 +60,23 @@ $(function () {
                         console.log(`监听到符合规则的请求：${details.url}，method：${details.method}，tabId：${details.tabId}`)
                         for (let prop in cache.webRequest) {
                             if (new RegExp(cache.webRequest[prop].reg, "gi").test(details.url)) {
-                                if (details.requestBody !== undefined) {
-                                    cache.webRequest[prop].details[details.tabId] = details.requestBody.formData;
-                                    console.log(`缓存：${details.tabId}，${details.url}\n参数：${JSON.stringify(details.requestBody.formData, undefined, 4)}`);
+                                if (details.requestBody === undefined) {
+                                    // 防止null异常，并且如果GET顺便清空
+                                    details.requestBody = {
+                                        formData: {}
+                                    }
                                 }
+
+                                let temp = {};
+                                // todo 等遇到多值的情况在再说
+                                for (let prop in details.requestBody.formData) {
+                                    temp[prop] = details.requestBody.formData[prop][0];
+                                }
+                                details.requestBody.formData = temp;
+
+                                cache.webRequest[prop].details[details.tabId] = details;    // content 还需要URL呢
+                                console.log(`缓存：${details.tabId}，${details.url}\n参数：${JSON.stringify(details.requestBody.formData, undefined, 4)}`);
+
                                 break;
                             }
                         }
@@ -81,7 +94,6 @@ $(function () {
                                 && handler.what === message.what) {
 
                                 handler.run(message, rawSender, sendResponse);
-                                // sendResponse({vvv: 2222});
                                 break;
                             }
                         }

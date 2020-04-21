@@ -3,8 +3,49 @@ $(function () {
         cache = {
             _handlers: [
                 haisen.utils.copy(haisen.message.app_crawl_lastReply, function (message, rawSender, sendResponse) {
-                    module.content.services.sendBackground(haisen.message.bg_data_webRequest_queryTicket_listV2, (result) => {
-                        console.log(`请求：${haisen.dict.background}，获取对应tabId的请求参数，result = ${JSON.stringify(result)}`);
+                    module.content.services.sendBackground(haisen.message.bg_data_webRequest_queryTicket_listV2, (cacheRequest) => {
+                        console.log(`请求：${haisen.dict.background}，获取对应tabId的请求参数，result = ${JSON.stringify(cacheRequest, undefined, 4)}`);
+
+                        if (cacheRequest != null && cacheRequest.code !== 0) {
+                            console.log(`bg_data_webRequest_queryTicket_listV2 请求：${haisen.dict.background}，返回异常，result = ${JSON.stringify(cacheRequest, undefined, 4)}`)
+                            return;
+                        }
+
+                        // todo 封装一下，callback
+
+                        let formData = {};
+                        if (cacheRequest.data.method === "POST") {
+                            formData = cacheRequest.data.requestBody.formData;
+                        }
+
+                        // todo 稍后测试 GET
+
+                        $.post(cacheRequest.data.url, formData, (postResult) => {
+                            console.log("请求原服务接口：" + cacheRequest.data.url + "请求参数：" + cacheRequest.data.requestBody)
+                            console.log("请求原服务接口，返回结果" + JSON.stringify(postResult, undefined, 4));
+
+                            if (postResult.success !== true || postResult.totalCount === 0) {
+                                console.log("请求原服务接口，返回异常或无数据");
+                                return;
+                            }
+
+                            for (let i = 0; i < postResult.totalCount; i++) {
+                                const item = postResult.items[i];
+
+                                let url = `${cacheRequest.data.initiator}/tickets-fly/pages/tickets/queryTicket_queryTicketContentAndMergedContent.action?ticketId=${item.t_id}&dir=asc`;
+
+                                console.log(`根据ticketId=${item.t_id}，请求回复往来，url=${url}`);
+
+                                $.get(url, (getResult) => {
+                                    if (getResult.success === true && getResult.totalCount > 0) {
+                                        console.log(`ticketId=${item.t_id}，最后一次回复信息：${getResult.items.pop(1).body}`);
+                                    }
+                                }, dataType = "json");
+                            }
+
+                        }, dataType = "json");
+
+
                     });
                     sendResponse(haisen.response.success);
                 })
