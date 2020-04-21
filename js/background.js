@@ -1,127 +1,119 @@
-var bgPage = bgPage || {
-    account: account
-};
-
 $(function () {
-    bgPage.init();
-    bgPage.bindListener();
-    bgPage.consoleNormall();
-});
-
-bgPage.init = function () {
-
-}
-
-// 获取当前选项卡ID
-function getCurrentTabId(callback) {
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        if (callback) callback(tabs.length ? tabs[0].id : null);
-    });
-}
-
-function sendMessageToContentScript(message, callback) {
-    getCurrentTabId((tabId) => {
-        chrome.tabs.sendMessage(tabId, message, function (response) {
-            if (callback) callback(response);
-        });
-    });
-}
-
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    console.log('收到来自content-script的消息：');
-    console.log(request, sender, sendResponse);
-    sendResponse('我是background，我已收到你的消息：' + JSON.stringify(request));
-});
-
-// backgrond向context_scripts发送消息
-function TT() {
-    sendMessageToContentScript('context_scripts你好，我是backgrond！', (response) => {
-        if (response) alert('backgrond收到来自content-script的回复：' + response);
-    });
-}
-
-// 获取当前选项卡ID
-function getCurrentTabId(callback) {
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-        if (callback) callback(tabs.length ? tabs[0].id : null);
-    });
-}
-
-// 向content-script主动发送消息
-function sendMessageToContentScript(message, callback) {
-    getCurrentTabId((tabId) => {
-        chrome.tabs.sendMessage(tabId, message, function (response) {
-            if (callback) callback(response);
-        });
-    });
-}
-
-
-bgPage.bindListener = function () {
-    /* Message passing */
-    chrome.runtime.onMessage.addListener((message, rawSender, sendResponse) => {
-        switch (message.type) {
-            case "app.open":
-                switch (message.what) {
-                    case "options":
-                        if (chrome.runtime.openOptionsPage) {
-                            chrome.runtime.openOptionsPage();
-                        } else {
-                            window.open(chrome.runtime.getURL('options.html'));
-                        }
-                        break;
+    let util = {},
+        response = haisen.response,
+        message = haisen.message,
+        cache = {
+            tabs: {},
+            currentTabId: undefined,    // 通过缓存来结果
+            currentVersion: undefined,
+            _handlers: [
+                haisen.utils.copy(message.app_open_options, function (message, rawSender, sendResponse) {
+                    if (chrome.runtime.openOptionsPage) {
+                        chrome.runtime.openOptionsPage();
+                    } else {
+                        window.open(chrome.runtime.getURL('options.html'));
+                    }
+                    sendResponse(response.success);
+                }), haisen.utils.copy(message.bg_data_webRequest_queryTicket_listV2, function (message, rawSender, sendResponse) {
+                    sendResponse(response.successData(cache.webRequest.queryTicket_listV2.details[cache.currentTabId]));
+                }),
+            ],
+            webRequest: {
+                queryTicket_listV2: {
+                    what: "lastReply",
+                    url: "http://*/*/queryTicket_listV2.action?*",
+                    reg: "http:\/\/.*?\/queryTicket_listV2\.action\?.*?",
+                    details: {}     // 按照tabId 来缓存
                 }
-                break;
-            case "app.crawl":
-                switch (message.what) {
-                    case "lastReply":
-                        TT();
-                        break;
-                }
-                break;
-        }
-        sendResponse({
-            success: true,
-            message: message
-        });
-    });
+            },
+        },
+        memory = {},
+        _ = {
+            init: function () {
+                cache.currentVersion = chrome.runtime.getManifest().version;
 
-    /*chrome.extension.onRequest.addListener(function (request, sender, sendResponse) {
-        switch (request.action) {
-            case "app.open":
-                sendResponse({
-                    success: true,
-                    message: "background response: 收到centent 页面同步过来的account对象."
+                this.registerPageEvent();
+                this.registerListener();
+                this.memoryInit();
+            },
+            registerPageEvent: function () {
+
+            },
+            memoryInit: function () {
+
+            },
+            registerListener: function () {
+                // Subscribe to tab events
+                chrome.tabs.onCreated.addListener((tab) => {
+                    cache.tabs[tab.id] = tab;
+                    cache.currentTabId = activeInfo.tabId;
                 });
-                break;
-            // case "switchProject_popup":
-            //     // 读取配置项,是在新tab打开页面，还是当前页面重定向
-            //     bgPage.getCurrentTabData(request.projectName);
-            //     sendResponse({
-            //         success: true,
-            //         message: "background response: 收到popup 页面切换项目."
-            //     });
-            //     break;
-        }
-    });*/
-}
+                chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+                    delete cache.tabs[tab.id];
+                });
+                chrome.tabs.onActivated.addListener((activeInfo) => {
+                    cache.currentTabId = activeInfo.tabId;
+                });
 
-bgPage.getCurrentTabData = function (projectName) {
-    chrome.tabs.getSelected(null, function (tab) {
-        chrome.tabs.sendRequest(tab.id, {action: "switchProject_bg", "projectName": projectName}, function (response) {
-            console.log(response);
-        });
-    });
-}
+                // 不能运行在 content 里
+                chrome.webRequest.onBeforeRequest.addListener((details) => {
+                        console.log(`监听到符合规则的请求：${details.url}，method：${details.method}，tabId：${details.tabId}`)
+                        for (let prop in cache.webRequest) {
+                            if (new RegExp(cache.webRequest[prop].reg, "gi").test(details.url)) {
+                                if (details.requestBody !== undefined) {
+                                    cache.webRequest[prop].details[details.tabId] = details.requestBody.formData;
+                                    console.log(`缓存：${details.tabId}，${details.url}\n参数：${JSON.stringify(details.requestBody.formData, undefined, 4)}`);
+                                }
+                                break;
+                            }
+                        }
+                    }, {
+                        urls: [cache.webRequest.queryTicket_listV2.url]
+                    },
+                    ["requestBody"]
+                );
 
-/**
- * 需要popup 页面来调用该方法，获取 content 发送给 bg 的 account 对象.
- */
-bgPage.transAccountObjToPopup = function () {
-    return bgPage.account;
-}
+                chrome.runtime.onMessage.addListener((message, rawSender, sendResponse) => {
+                        console.log(`Background 收到来自 ${message.from} 的消息：${JSON.stringify(message)}`);
+                        for (const handler of cache._handlers) {
+                            if (handler.from === message.from
+                                && handler.type === message.type
+                                && handler.what === message.what) {
 
-bgPage.consoleNormall = function () {
-    //console.log('%cbackground   normal!', 'background-image:-webkit-gradient( linear, left top, right top, color-stop(0, #f22), color-stop(0.15, #f2f), color-stop(0.3, #22f), color-stop(0.45, #2ff), color-stop(0.6, #2f2),color-stop(0.75, #2f2), color-stop(0.9, #ff2), color-stop(1, #f22) );color:transparent;-webkit-background-clip: text;font-size:5em;');
-    //console.log("%c", "margin-left: 316px;padding:100px 0px 50px 200px;line-height:50px;background:url('http://i2.s1.dpfile.com/pc/gp/eac9b51a169a02cbcacb067a4bcc045b(600x300)/thumb.jpg') no-repeat;");
-}
+                                handler.run(message, rawSender, sendResponse);
+                                // sendResponse({vvv: 2222});
+                                break;
+                            }
+                        }
+                    }
+                );
+            }
+        },
+        module = {
+            bg: {
+                cache: {},
+                init: function () {
+                },
+                services: {
+                    sendContent: function (message, callback) {
+                        module.popup._private.addFrom(message);
+                        chrome.tabs.sendMessage(cache.currentTabId, message, function (response) {
+                            if (callback) callback(response);
+                        });
+                    },
+                    sendPopup: function (message, callback) {
+                        module.popup._private.addFrom(message);
+                        chrome.runtime.sendMessage(message, callback);
+                    },
+                },
+                _private: {
+                    addFrom: function (message) {
+                        message.from = haisen.dict.background;
+                    }
+                }
+            }
+        };
+
+    _.init();
+});
+

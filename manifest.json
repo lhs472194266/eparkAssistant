@@ -1,13 +1,18 @@
 {
   "name": "Haisen Extension",
-  "version": "1.0.0.1",
+  "version": "1.0.0.2",
   "manifest_version": 2,
   "description": "linghaisen，493101885@qq.com",
   "options_page": "html/options.html",
   "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "http://ticket.litb-test.com/*",
+    "http://ticket.litb-inc.com/*",
     "management",
     "storage",
     "tabs",
+    "activeTab",
     "unlimitedStorage",
     "notifications",
     "http://*/*",
@@ -15,8 +20,8 @@
   ],
   "background": {
     "scripts": [
-      "js/account.js",
       "js/jquery-1.11.1.js",
+      "js/common.js",
       "js/background.js"
     ]
   },
@@ -37,6 +42,7 @@
       ],
       "js": [
         "js/jquery-1.11.1.js",
+        "js/common.js",
         "js/content.js"
       ],
       "css": [

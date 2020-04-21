@@ -1,38 +1,62 @@
 $(function () {
     let util = {},
         cache = {
+            tabs: {},
+            currentTabId: undefined,
+            bgObj: chrome.extension.getBackgroundPage(),
             $option_btn: $("#options"),
             $query_last_reply_btn: $("#query_last_reply_btn"),
+            $tip: $("#tip"),
+            _handlers: [
+                /*new function () {
+                    return {
+                        from: "background",
+                        type: "app.crawl",
+                        what: "lastReply",
+                        run: function (message, rawSender, sendResponse) {
+                            sendResponse({code: 0, message: "success"});
+                        }
+                    }
+                }*/
+            ],
         },
         memory = {},
         _ = {
             init: function () {
                 this.registerPageEvent();
+                this.registerListener();
                 this.memoryInit();
             },
             registerPageEvent: function () {
                 $(".main-header a.logo").css("pointer-events", "none");
                 cache.$option_btn.click(() => {
-                    chrome.runtime.sendMessage({
-                        type: "app.open",
-                        what: "options"
-                    }, function (result) {
+                    module.popup.services.sendBackground(haisen.message.app_open_options, (result) => {
                         console.log(result);
                     });
                 });
 
                 cache.$query_last_reply_btn.click(() => {
-                    chrome.runtime.sendMessage({
-                        type: "app.crawl",
-                        what: "lastReply",
-                        title: "批量抓取最后一次回复"
-                    }, function (result) {
+                    module.popup.services.sendContent(haisen.message.app_crawl_lastReply, (result) => {
                         console.log(result);
                     });
                 });
             },
-            memoryInit: function () {
+            registerListener: function () {
+                chrome.runtime.onMessage.addListener((message, rawSender, sendResponse) => {
+                    console.log(`Popup 收到来自 ${message.from} 的消息：${JSON.stringify(message)}`);
+                    for (const handler of cache._handlers) {
+                        if (handler.from === message.from
+                            && handler.type === message.type
+                            && handler.what === message.what) {
 
+                            handler.run(message, rawSender, sendResponse);
+                            break;
+                        }
+                    }
+                });
+            },
+            memoryInit: function () {
+                // Unchecked runtime.lastError: Could not establish connection. Receiving end does not exist.
             }
         },
         module = {
@@ -40,8 +64,25 @@ $(function () {
                 cache: {},
                 init: function () {
                 },
-                services: {},
-                chartUseRatio: function (data) {
+                services: {
+                    sendContent: function (message, callback) {
+                        module.popup._private.addFrom(message);
+                        chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+                            chrome.tabs.sendMessage(tabs.length ? tabs[0].id : null, message, function (response) {
+                                if (callback)
+                                    callback(tabs.length ? tabs[0].id : null);
+                            });
+                        });
+                    },
+                    sendBackground: function (message, callback) {
+                        module.popup._private.addFrom(message);
+                        chrome.runtime.sendMessage(message, callback);
+                    }
+                },
+                _private: {
+                    addFrom: function (message) {
+                        message.from = haisen.dict.popup;
+                    }
                 }
             }
         };
