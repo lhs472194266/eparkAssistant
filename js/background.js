@@ -14,9 +14,15 @@ $(function () {
                         window.open(chrome.runtime.getURL('options.html'));
                     }
                     sendResponse(response.success);
-                }), haisen.utils.copy(message.bg_data_webRequest_queryTicket_listV2, function (message, rawSender, sendResponse) {
+                }),
+                haisen.utils.copy(message.bg_data_webRequest_queryTicket_listV2, function (message, rawSender, sendResponse) {
                     sendResponse(response.successData(cache.webRequest.queryTicket_listV2.details[cache.currentTabId]));
                 }),
+                /*haisen.utils.copy(message.app_open_console, function (message, rawSender, sendResponse) {
+                    chrome.tabs.create({url: haisen.message.app_open_console.baidu}, (tab) => {
+                        sendResponse(response.successData({tabId: tab.id}));
+                    });
+                }),*/
             ],
             webRequest: {
                 queryTicket_listV2: {
@@ -35,6 +41,18 @@ $(function () {
                 this.registerPageEvent();
                 this.registerListener();
                 this.memoryInit();
+
+                // https://zhuanlan.zhihu.com/p/47469896
+                /*chrome.contextMenus.create({
+                    type: 'normal',
+                    title: '待完善',
+                    id: 'menuDemo',
+                    contexts: ['all'],
+                    onclick: function () {
+                    }
+                }, function () {
+                    console.log('contextMenus are create.');
+                });*/
             },
             registerPageEvent: function () {
 
@@ -46,7 +64,8 @@ $(function () {
                 // Subscribe to tab events
                 chrome.tabs.onCreated.addListener((tab) => {
                     cache.tabs[tab.id] = tab;
-                    cache.currentTabId = activeInfo.tabId;
+                    cache.currentTabId = tab.id;
+                    // console.log(cache.currentTabId);
                 });
                 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
                     delete cache.tabs[tab.id];
@@ -94,7 +113,7 @@ $(function () {
                                 && handler.what === message.what) {
 
                                 handler.run(message, rawSender, sendResponse);
-                                break;
+                                return true;    // 这是重点，it's important
                             }
                         }
                     }
@@ -116,7 +135,7 @@ $(function () {
                     sendPopup: function (message, callback) {
                         module.popup._private.addFrom(message);
                         chrome.runtime.sendMessage(message, callback);
-                    },
+                    }
                 },
                 _private: {
                     addFrom: function (message) {

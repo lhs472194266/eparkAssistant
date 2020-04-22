@@ -10,6 +10,7 @@
     "http://ticket.litb-test.com/*",
     "http://ticket.litb-inc.com/*",
     "management",
+    "contextMenus",
     "storage",
     "tabs",
     "activeTab",
@@ -38,7 +39,9 @@
       ],
       "include_matches": [
         "http://ticket.litb-test.com/*/*",
-        "http://ticket.litb-inc.com/*/*"
+        "http://ticket.litb-inc.com/*/*",
+        "https://www.baidu.com/*/*",
+        "http://www.baidu.com/*/*"
       ],
       "js": [
         "js/jquery-1.11.1.js",
@@ -48,7 +51,7 @@
       "css": [
         "css/content.css"
       ],
-      "run_at": "document_start",
+      "run_at": "document_end",
       "all_frames": true
     }
   ],

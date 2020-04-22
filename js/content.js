@@ -18,7 +18,9 @@ $(function () {
                             formData = cacheRequest.data.requestBody.formData;
                         }
 
-                        // todo 稍后测试 GET
+                        /*chrome.notifications.create("basic", "213", (notificationId) => {
+
+                        });*/
 
                         $.post(cacheRequest.data.url, formData, (postResult) => {
                             console.log("请求原服务接口：" + cacheRequest.data.url + "请求参数：" + cacheRequest.data.requestBody)
@@ -29,6 +31,9 @@ $(function () {
                                 return;
                             }
 
+                            // 通知bg 开心的 Tab页面，用于输出.
+                            // todo 目前获取新tab 对象元素有点困难呀。
+                            // module.content.services.sendBackground(haisen.message.app_open_console, (response) => { });
                             for (let i = 0; i < postResult.totalCount; i++) {
                                 const item = postResult.items[i];
 
@@ -45,7 +50,6 @@ $(function () {
 
                         }, dataType = "json");
 
-
                     });
                     sendResponse(haisen.response.success);
                 })
@@ -57,6 +61,9 @@ $(function () {
                 this.registerPageEvent();
                 this.registerListener();
                 this.memoryInit();
+
+                $("body").append("<div style='display: none;background: red;height: 200px;z-index: 30000;position: absolute;width: 100%;top: 100px;opacity: 0.6;' id='haisen_console'>123</div>");
+
             },
             registerPageEvent: function () {
             },
@@ -73,6 +80,23 @@ $(function () {
                         }
                     }
                 });
+
+                /* window.addEventListener('message', (e) => {
+                     console.log(e.data)
+                 }, false)*/
+
+                /*chrome.runtime.onConnect.addListener((port) => {
+                    console.log(port);
+
+                    if (port.name === 'test') {
+                        port.onMessage.addListener((data) => {
+                            console.log('Received from popup:', data.message)
+                            if (data.message === 'WHO') {
+                                port.postMessage({message: 'I am content.js'})
+                            }
+                        })
+                    }
+                })*/
             },
             memoryInit: function () {
 
@@ -85,6 +109,11 @@ $(function () {
                 },
                 services: {
                     sendBackground: function (message, callback) {
+                        module.content._private.addFrom(message);
+                        chrome.runtime.sendMessage(message, callback);
+                    },
+                    // 向指定tab centent 发送消息
+                    sendContent: function (message, callback) {
                         module.content._private.addFrom(message);
                         chrome.runtime.sendMessage(message, callback);
                     }

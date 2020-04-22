@@ -3,6 +3,7 @@ let haisen = {
         popup: "popup",
         background: "background",
         content: "content",
+        console: "console",
     }
 };
 
@@ -52,6 +53,8 @@ haisen.utils = {
 
 haisen.message = {
     app_open_options: {from: haisen.dict.popup, type: "app.open", what: "options"},
+    // output_to_console: {from: haisen.dict.content, type: "app.console", what: "312312312"},
+    app_open_console: {from: haisen.dict.content, type: "app.open", baidu: "https://www.baidu.com/"},
     bg_data_webRequest_queryTicket_listV2: {from: haisen.dict.content, type: "bg.data", what: "queryTicket_listV2"},
     /**
      * 抓取当前页面 ticket 最后一次回复
