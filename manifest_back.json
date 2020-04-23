@@ -1,0 +1,63 @@
+{
+  "name": "Haisen Extension",
+  "version": "1.0.0.2",
+  "manifest_version": 2,
+  "description": "linghaisen，493101885@qq.com",
+  "options_page": "html/options.html",
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "http://ticket.litb-test.com/*",
+    "http://ticket.litb-inc.com/*",
+    "management",
+    "contextMenus",
+    "storage",
+    "tabs",
+    "activeTab",
+    "unlimitedStorage",
+    "notifications",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "scripts": [
+      "js/jquery-1.11.1.js",
+      "js/common.js",
+      "js/background.js"
+    ]
+  },
+  "browser_action": {
+    "default_icon": "image/demon-19.png",
+    "default_title": "Haisen插件\u2122",
+    "default_popup": "html/popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "include_matches": [
+        "http://ticket.litb-test.com/*/*",
+        "http://ticket.litb-inc.com/*/*",
+        "https://www.baidu.com/*/*",
+        "http://www.baidu.com/*/*"
+      ],
+      "js": [
+        "js/jquery-1.11.1.js",
+        "js/common.js",
+        "js/content.js"
+      ],
+      "css": [
+        "css/content.css"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "icons": {
+    "16": "image/demon-16.png",
+    "48": "image/demon-48.png",
+    "128": "image/demon-128.png"
+  }
+}

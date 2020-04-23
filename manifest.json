@@ -9,15 +9,10 @@
     "webRequestBlocking",
     "http://ticket.litb-test.com/*",
     "http://ticket.litb-inc.com/*",
-    "management",
-    "contextMenus",
     "storage",
     "tabs",
-    "activeTab",
     "unlimitedStorage",
-    "notifications",
-    "http://*/*",
-    "https://*/*"
+    "notifications"
   ],
   "background": {
     "scripts": [

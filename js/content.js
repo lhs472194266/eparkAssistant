@@ -1,5 +1,6 @@
 $(function () {
     let util = {},
+        currentTabId = undefined,
         cache = {
             _handlers: [
                 haisen.utils.copy(haisen.message.app_crawl_lastReply, function (message, rawSender, sendResponse) {
@@ -62,7 +63,7 @@ $(function () {
                 this.registerListener();
                 this.memoryInit();
 
-                $("body").append("<div style='display: none;background: red;height: 200px;z-index: 30000;position: absolute;width: 100%;top: 100px;opacity: 0.6;' id='haisen_console'>123</div>");
+                // $("body").append("<div style='display: none;background: #ff0000;height: 200px;z-index: 30000;position: absolute;width: 100%;top: 100px;opacity: 0.6;' id='haisen_console'>123</div>");
 
             },
             registerPageEvent: function () {

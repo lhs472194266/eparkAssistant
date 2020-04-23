@@ -68,7 +68,7 @@ $(function () {
                     // console.log(cache.currentTabId);
                 });
                 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
-                    delete cache.tabs[tab.id];
+                    delete cache.tabs[tabId];
                 });
                 chrome.tabs.onActivated.addListener((activeInfo) => {
                     cache.currentTabId = activeInfo.tabId;
